@@ -1,5 +1,8 @@
 ;; -*- lexical-binding: t; -*-
 
+(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+(load custom-file 'noerror)
+
 (load (expand-file-name "secrets.el" user-emacs-directory) t)
 
 ;; silence Emacs 30.2 compiler/warning buffers
@@ -106,20 +109,6 @@
 (require 'server)
 (unless (server-running-p)
   (server-start))
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   '(doom-modeline doom-themes evil-collection general magit paredit
-                   projectile racket-mode rainbow-delimiters)))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
 
 (require 'projectile)
 (setq projectile-project-search-path '("~/projects" "~/.config/emacs/"))
@@ -156,9 +145,16 @@
   "er" '(eval-region :which-key "eval region")
   "es" '(jsi/save-and-eval-buffer :which-key "save and eval buffer")
 
-  "f" '(:ignore t :which-key "file)")
+  "f" '(:ignore t :which-key "file")
   "fp" '((lambda () (interactive) (find-file (expand-file-name "init.el" user-emacs-directory))) :which-key "open init.el")
   "fs" '(save-buffer :which-key "save file")
+
+  "g" '(:ignore t :which-key "magit")
+  "gg" '(magit-status :which-key "magit status")
+  "gb" '(magit-blame-addition :which-key "magit blame")
+  "gl" '(magit-log-current :which-key "magit log")
+  "gd" '(magit-diff-buffer-file :which-key "magit diff current file")
+  "gf" '(magit-find-file :which-key "magit find file")
 
   "p" '(:ignore t :which-key "project")
   "pp" '(projectile-switch-project :which-key "switch project")
