@@ -1,9 +1,10 @@
 # ignore the entire local state directory (Doom's old habit)
 .local/
 
-# ignore the package installation directory
+# ignore the package installation/misc. directories
 elpa/
 eln-cache/
+transient/
 
 # ignore auto-save and backup files
 backups/
@@ -12,8 +13,15 @@ auto-save/
 \#*\#
 .\#*
 
-# ignore local variable/customization files
+# ignore local variable/customization/secrets files
 custom.el
+secrets.el
 
 # ignore the server socket
 server/
+
+# ignore tramp
+tramp
+
+# ignore projectile files
+projectile-bookmarks.eld

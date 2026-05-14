@@ -1,7 +1,6 @@
 ;; -*- lexical-binding: t; -*-
 
-(setq user-full-name "Jonathan Simpson")
-(setq user-mail-address "jsimpson.github@gmail.com")
+(load (expand-file-name "secrets.el" user-emacs-directory) t)
 
 ;; silence Emacs 30.2 compiler/warning buffers
 (setq native-comp-async-report-warnings-errors 'silent)
@@ -22,7 +21,8 @@
                     paredit
                     rainbow-delimiters
                     magit
-                    which-key))
+                    which-key
+                    projectile))
 
 ;; automatic installation
 (unless package-archive-contents
@@ -113,7 +113,7 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    '(doom-modeline doom-themes evil-collection general magit paredit
-                   racket-mode rainbow-delimiters)))
+                   projectile racket-mode rainbow-delimiters)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -121,11 +121,11 @@
  ;; If there is more than one, they won't work right.
  )
 
-(defun open-my-init-file ()
-  "Open the emacs init file."
-  (interactive)
-  (find-file (expand-file-name "init.el" user-emacs-directory)))
-(global-set-key (kbd "C-c i") #'open-my-init-file)
+(require 'projectile)
+(setq projectile-project-search-path '("~/projects" "~/.config/emacs/"))
+(setq projectile-completion-system 'default)
+(setq projectile-git-command "fdfine . -0 --type f")
+(projectile-mode +1)
 
 (require 'general)
 
@@ -136,5 +136,35 @@
    :prefix "SPC"
    :global-prefix "C-SPC")
 
+(defun jsi/save-and-eval-buffer ()
+  "Save the current buffer and then eval it."
+  (interactive)
+  (save-buffer)
+  (eval-buffer)
+  (message "Buffer saved and eval'd."))
+
 (jsi/leader-keys
-  "." '(find-file :which-key "find file"))
+  "." '(find-file :which-key "find file")
+  "b" '(:ignore t :which-key "buffer")
+  "bb" '(switch-to-buffer :which-keyu "switch buffer")
+  "bk" '(kill-current-buffer :which-key "kill buffer")
+
+  "e" '(:ignore t :which-key "eval")
+  "eb" '(eval-buffer :which-key "eval buffer")
+  "ee" '(eval-last-sexp :which-key "eval last expression")
+  "ef" '(eval-defun :which-key "eval fun/defun")
+  "er" '(eval-region :which-key "eval region")
+  "es" '(jsi/save-and-eval-buffer :which-key "save and eval buffer")
+
+  "f" '(:ignore t :which-key "file)")
+  "fp" '((lambda () (interactive) (find-file (expand-file-name "init.el" user-emacs-directory))) :which-key "open init.el")
+  "fs" '(save-buffer :which-key "save file")
+
+  "p" '(:ignore t :which-key "project")
+  "pp" '(projectile-switch-project :which-key "switch project")
+  "pf" '(projectile-find-file :which-key "find file in project")
+  "ps" '(projectile-save-project-buffers :which-key "save project")
+  "pd" '(projectile-dired :which-key "project dired")
+
+  "q" '(:ignore t :which-key "quit")
+  "qq" '(save-buffers-kill-terminal :which-key "quit emacs"))
