@@ -1,0 +1,19 @@
+# ignore the entire local state directory (Doom's old habit)
+.local/
+
+# ignore the package installation directory
+elpa/
+eln-cache/
+
+# ignore auto-save and backup files
+backups/
+auto-save/
+*~
+\#*\#
+.\#*
+
+# ignore local variable/customization files
+custom.el
+
+# ignore the server socket
+server/

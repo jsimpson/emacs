@@ -1,0 +1,143 @@
+;; -*- lexical-binding: t; -*-
+
+(setq user-full-name "Jonathan Simpson")
+(setq user-mail-address "jsimpson.github@gmail.com")
+
+;; silence Emacs 30.2 compiler/warning buffers
+(setq native-comp-async-report-warnings-errors 'silent)
+(setq byte-compile-warnings '(not free-vars unresolved last-line obsolete))
+(setq warning-minimum-level :error)
+
+;; packages
+(require 'package)
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+(package-initialize)
+
+(setq my-packages '(evil
+                    evil-collection
+                    general
+                    doom-themes
+                    doom-modeline
+                    racket-mode
+                    paredit
+                    rainbow-delimiters
+                    magit
+                    which-key))
+
+;; automatic installation
+(unless package-archive-contents
+  (package-refresh-contents))
+(dolist (pkg my-packages)
+  (unless (package-installed-p pkg)
+    (package-install pkg)))
+
+;; evil
+(require 'evil)
+(setq evil-want-integration t)
+(setq evil-want-keybinding nil)
+(evil-mode 1)
+
+(with-eval-after-load 'evil
+  (require 'evil-collection)
+  (evil-collection-init)
+  (evil-global-set-key 'motion "j" 'evil-next-visual-line)
+  (evil-global-set-key 'motion "k" 'evil-previous-visual-line))
+
+;; escape should quit everything
+(global-set-key (kbd "<escape>") 'keyboard-escape-quit)
+
+;; ui & theme
+(setq inhibit-startup-screen t)
+(menu-bar-mode -1)
+(tool-bar-mode -1)
+(scroll-bar-mode -1)
+(column-number-mode t)
+
+;; theme & modeline
+(load-theme 'doom-tokyo-night t)
+(require 'doom-modeline)
+(doom-modeline-mode 1)
+
+;; font
+(set-face-attribute 'default nil :font "JetBrains Mono" :height 125)
+
+;; relative line numbers
+(setq display-line-numbers-type 'relative)
+(global-display-line-numbers-mode t)
+(dolist (mode '(term-mode-hook shell-mode-hook eshell-mode-hook racket-repl-mode-hook treemacs-mode-hook))
+  (add-hook mode (lambda () (display-line-numbers-mode 0))))
+
+;; editor hygiene
+(setq-default show-trailing-whitespace t)
+(setq-default indicate-empty-lines t)
+(setq-default indent-tabs-mode nil)
+(setq-default tab-width 4)
+(setq sentence-end-double-space nil)
+
+;; backups & auto-saves
+(setq backup-directory-alist `(("." . ,(expand-file-name "backups" user-emacs-directory))))
+(setq auto-save-file-name-transforms `((".*" ,(expand-file-name "auto-save" user-emacs-directory) t)))
+(setq backup-by-copying t)
+(setq create-lockfiles nil)
+
+;; paren management
+(setq show-paren-delay 0)
+(show-paren-mode 1)
+
+;; lisp & racket dev
+(require 'racket-mode)
+(add-hook 'racket-mode-hook #'racket-xp-mode)
+(add-hook 'racket-mode-hook #'enable-paredit-mode)
+(add-hook 'racket-mode-hook #'rainbow-delimiters-mode)
+
+;; REPL hygiene
+(add-hook 'racket-repl-mode-hook #'enable-paredit-mode)
+
+;; global lisp structural editing
+(add-hook 'emacs-lisp-mode-hook #'enable-paredit-mode)
+(add-hook 'lisp-interaction-mode-hook #'enable-paredit-mode)
+
+;; utils
+(require 'which-key)
+(setq which-key-idle-delay 0.3)
+(which-key-mode)
+
+;; start the server for emacsclient use
+(require 'server)
+(unless (server-running-p)
+  (server-start))
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   '(doom-modeline doom-themes evil-collection general magit paredit
+                   racket-mode rainbow-delimiters)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
+
+(defun open-my-init-file ()
+  "Open the emacs init file."
+  (interactive)
+  (find-file (expand-file-name "init.el" user-emacs-directory)))
+
+;; Bind it to 'SPC f i' (if you want to start building a leader map)
+;; or a simple global key:
+(global-set-key (kbd "C-c i") #'open-my-init-file)
+
+(require 'general)
+
+;; use SPC in normal/visual/motion states
+(general-create-definer jsi/leader-keys
+   :states '(normal visual motion emacs)
+   :keymaps 'override
+   :prefix "SPC"
+   :global-prefix "C-SPC")
+
+(jsi/leader-keys
+  "." '(find-file :which-key "find file"))
