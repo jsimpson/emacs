@@ -125,9 +125,6 @@
   "Open the emacs init file."
   (interactive)
   (find-file (expand-file-name "init.el" user-emacs-directory)))
-
-;; Bind it to 'SPC f i' (if you want to start building a leader map)
-;; or a simple global key:
 (global-set-key (kbd "C-c i") #'open-my-init-file)
 
 (require 'general)
