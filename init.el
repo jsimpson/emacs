@@ -17,6 +17,7 @@
 
 (setq my-packages '(evil
                     evil-collection
+                    evil-org
                     general
                     doom-themes
                     doom-modeline
@@ -34,6 +35,24 @@
   (unless (package-installed-p pkg)
     (package-install pkg)))
 
+;; org
+(require 'org)
+(setq org-ellipsis " ▾"              ; Nicer fold marker
+      org-hide-emphasis-markers t    ; Hide the * / _ symbols for bold/italics
+      org-log-done 'time)            ; Timestamp when a task is finished
+
+(setq org-directory "~/notes"
+      org-default-notes-file (expand-file-name "inbox.org" org-directory))
+
+(unless (file-exists-p org-directory)
+  (make-directory org-directory))
+
+(add-hook 'org-mode-hook 'visual-line-mode)
+
+(setq org-src-fontify-natively t
+      org-src-tab-acts-natively t
+      org-confirm-babel-evaluate nil)
+
 ;; evil
 (require 'evil)
 (setq evil-want-integration t)
@@ -46,8 +65,20 @@
   (evil-global-set-key 'motion "j" 'evil-next-visual-line)
   (evil-global-set-key 'motion "k" 'evil-previous-visual-line))
 
+(with-eval-after-load 'org
+  (require 'evil-org)
+  (add-hook 'org-mode-hook 'evil-org-mode)
+  (evil-org-set-key-theme '(navigation insert shift todo heading)))
+
 ;; escape should quit everything
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
+
+;; autocomplete
+(global-completion-preview-mode 1)
+
+(setq completions-format 'one-column)
+(setq completions-max-height 20)
+(setq completion-auto-select t)
 
 ;; ui & theme
 (setq inhibit-startup-screen t)
@@ -155,6 +186,12 @@
   "gl" '(magit-log-current :which-key "magit log")
   "gd" '(magit-diff-buffer-file :which-key "magit diff current file")
   "gf" '(magit-find-file :which-key "magit find file")
+
+  "n" '(:ignore t :which-key "notes")
+  "na" '(org-agenda :which-key "agenda")
+  "nc" '(org-capture :which-key "capture")
+  "ni" '((lambda () (interactive) (find-file (expand-file-name "inbox.org" org-directory))) :which-key "open inbox")
+  "nt" '(org-todo :which-key "cycle todo state")
 
   "p" '(:ignore t :which-key "project")
   "pp" '(projectile-switch-project :which-key "switch project")
