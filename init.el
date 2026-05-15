@@ -37,9 +37,9 @@
 
 ;; org
 (require 'org)
-(setq org-ellipsis " ▾"              ; Nicer fold marker
-      org-hide-emphasis-markers t    ; Hide the * / _ symbols for bold/italics
-      org-log-done 'time)            ; Timestamp when a task is finished
+(setq org-ellipsis " ▾"
+      org-hide-emphasis-markers t
+      org-log-done 'time)
 
 (setq org-directory "~/notes"
       org-default-notes-file (expand-file-name "inbox.org" org-directory))
